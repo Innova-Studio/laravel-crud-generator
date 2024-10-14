@@ -1,0 +1,25 @@
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition() : array
+    {
+        return [
+            {{ attributes }}
+        ];
+    }
+
+     /**
+     * Configure the model factory.
+     */
+    public function configure(): static
+    {
+        return $this->afterMaking( function( {{ model }} ${{ var_name }} )
+        {
+            // TO DO
+        })->afterCreating( function( {{ model }} ${{ var_name }} )
+        {
+            // TO DO
+        });
+    }

@@ -1,0 +1,30 @@
+{
+    "name": "innova-studio/laravel-crud-generator",
+    "type": "library",
+    "description": "Laravel CRUD Generator is a library to automate the creation of files for Laravel APIs",
+    "keywords": ["crud", "laravel", "innova-studio", "generator", "api", "file generator"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alejandro Manuel Romero",
+            "email": "alejandro@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.0",
+        "laravel/framework": ">=9.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "InnovaStudio\\LaravelCrudGenerator\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "InnovaStudio\\LaravelCrudGenerator\\LaravelCrudGeneratorServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev"
+}

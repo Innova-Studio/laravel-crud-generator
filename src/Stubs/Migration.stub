@@ -1,0 +1,24 @@
+<?php
+
+{{ namespace }}{{ use }}class {{ classname }}{{ extends }}
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create( '{{ table }}', function (Blueprint $table) {{{ columns }}{{ constraints }}\t\t});
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists( '{{ table }}' );
+    }
+}
