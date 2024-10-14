@@ -22,7 +22,7 @@ yarn-error.log
 /database
 /tests
 /bootstrap
-laravel-crud-generator.json
+/laravel-crud-generator.json
 webpack.mix.js
 server.php
 package.json

@@ -1,0 +1,231 @@
+{
+    "entities": {
+        "ProductCategory": {
+            "attributes": {
+                "name": {
+                    "type": "string",
+                    "nullable": false,
+                    "unique": true
+                },
+                "description": {
+                    "type": "text",
+                    "nullable": true,
+                    "unique": false
+                },
+                "parent_id": {
+                    "type": "bigInteger",
+                    "nullable": true,
+                    "unique": false
+                }
+            },
+            "relations": {
+                "belongsTo": {
+                    "Brand" : {},
+                    "ProductCategory": {
+                        "related": "App\\Models\\Products\\ProductCategory",
+                        "foreingKey": "parent_id"
+                    }
+                },
+                "hasMany": {
+                    "Product":{
+                        "related": "App\\Models\\Products\\Product",
+                        "foreingKey": "product_category_id",
+                        "localKey": "id"
+                    }
+                }
+            },
+            "model": {
+                "namespace": "App\\Models\\Products",
+                "filePath": "app/Models/Products",
+                "classname": "ProductCategory",
+                "table": "product_cateogries",
+                "extends": "App\\Models\\Model",
+                "rewrite": true
+            },
+            "controller": {
+                "namespace": "App\\Http\\Controllers\\Product",
+                "filePath": "app/Http/Controllers/Product",
+                "extends": "App\\Http\\Controllers\\Controller"
+            },
+            "service": {
+                "use": [ "Laravel\\Sanctum\\HasApiTokens", "Illuminate\\Notifications\\Notifiable" ],
+                "namespace": "App\\Services\\Product",
+                "filePath": "app/Services/Product",
+                "extends": "App\\Services\\Service"
+            },
+            "resource": {
+                "namespace": "App\\Http\\Resources\\Product",
+                "filePath": "app/Http/Resources/Product"
+            },
+            "request": {
+                "namespace": "App\\Http\\Requests\\Product",
+                "filePath": "app/Http/Requests/Product"
+            }
+        },
+        "Product": {
+            "nameSingular": "product",
+            "namePlural": "products",
+            "rewrite": true,
+            "files": [ "routes", "model", "controller", "migration", "resource", "request", "factory", "service", "test", "mock" ],
+            "attributes": {
+                "title": {
+                    "type": "string",
+                    "nullable": false,
+                    "unique": true
+                },
+                "description": {
+                    "type": "text",
+                    "nullable": true,
+                    "unique": false
+                },
+                "price": {
+                    "type": "decimal",
+                    "nullable": false,
+                    "unique": false
+                },
+                "product_category_id": {
+                    "type": "bigInteger",
+                    "nullable": false,
+                    "unique": false
+                },
+                "product_brand_id": {
+                    "type": "bigInteger",
+                    "nullable": false,
+                    "unique": false
+                }
+            },
+            "relations": {
+                "belongsTo": {
+                    "ProductBrand" : {
+                        "related": "App\\Models\\Products\\ProductBrand",
+                        "foreingKey": "product_brand_id"
+                    },
+                    "ProductCategory": {
+                        "related": "App\\Models\\Products\\ProductCategory",
+                        "foreingKey": "product_category_id"
+                    }
+                },
+                "hasOne": {
+                    "Post":{
+                        "related": "App\\Models\\Posts\\Post",
+                        "foreingKey": "product_id",
+                        "localKey": "id"
+                    }
+                },
+                "belongsToMany": {
+                    "ProductTag":{
+                        "related": "App\\Models\\Products\\ProductTag",
+                        "table": "tags_products",
+                        "foreignPivotKey": "productid",
+                        "relatedPivotKey": "tagid",
+                        "parentKey": "idproducto",
+                        "relatedKey": "idtag",
+                        "relation": "product_tag_relation_name"
+                    }
+                },
+                "hasMany": {
+                    "SaleItem":{
+                        "related": "App\\Models\\Sales\\SaleItem",
+                        "foreingKey": "product_id",
+                        "localKey": "id"
+                    }
+                },
+                "hasManyThrough": {
+                    "Sale": {
+                        "related": "App\\Models\\Sales\\Sale",
+                        "through": "App\\Models\\Sales\\SaleItem",
+                        "firstKey": "product_id",
+                        "secondKey": "idsale",
+                        "localKey": "item_id",
+                        "secondLocalKey": "sale_id"
+                    }
+                },
+                "morphTo" : {
+                    "imageable": {
+                        "type": "imageable_type",
+                        "id": "imageable_id",
+                        "owner": "id"
+                    },
+                    "testeable": {
+
+                    }
+                },
+                "morphMany": {
+                    "Image": {
+                        "relationName": "images",
+                        "related": "App\\Models\\Images\\Image",
+                        "name": "imageable"
+                    }
+                },
+                "morphOne": {
+                    "Image": {
+                        "relationName": "image",
+                        "related": "App\\Models\\Images\\Image",
+                        "name": "imageable"
+                    }
+                }
+            },
+            "model": {
+                "namespace": "App\\Models",
+                "filePath": "app/Models",
+                "classname": "Product",
+                "table": "products",
+                "primaryKey": "idproduct",
+                "traits": [ "Laravel\\Sanctum\\HasApiTokens", "Illuminate\\Notifications\\Notifiable" ],
+                "interfaces": [ "Illuminate\\Contracts\\Auth\\MustVerifyEmail" ],
+                "extends": "Illuminate\\Foundation\\Auth\\User as Authenticatable",
+                "rewrite": true
+            },
+            "controller": {
+                "filePath": "app/Http/Controllers/Product",
+                "methods": [ "list", "store", "delete", "test1", "test2" ]
+            },
+            "service": {
+                "use": [ "Laravel\\Sanctum\\HasApiTokens", "Illuminate\\Notifications\\Notifiable" ],
+                "extends": "MainService",
+                "filePath": "app/Services/Product",
+                "methods": [ "list", "store", "update", "delete" ]
+            },
+            "migration": {
+                "table": "products",
+                "id": "idproduct",
+                "filePath": "database/migrations"
+            },
+            "factory": {
+                "filePath": "database/factories/product"
+            },
+            "mock": {
+                "filePath": "database/seeders/mocks/product",
+                "count": "100"
+            },
+            "tests": {
+
+            },
+            "routes": {
+
+            }
+        },
+        "Invoice": {
+            "attributes": {
+                "user_id": {
+                    "type": "bigInteger",
+                    "nullable": false,
+                    "unique": true
+                },
+                "amount": {
+                    "type": "decimal",
+                    "nullable": false,
+                    "unique": false
+                },
+                "issue_date": {
+                    "type": "dateTime",
+                    "nullable": false,
+                    "unique": false
+                }
+            },
+            "service": {
+                "static_methods": true
+            }
+        }
+    }
+}
