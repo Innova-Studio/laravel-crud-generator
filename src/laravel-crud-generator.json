@@ -1,76 +1,19 @@
 {
     "entities": {
-        "ProductCategory": {
-            "attributes": {
-                "name": {
-                    "type": "string",
-                    "nullable": false,
-                    "unique": true
-                },
-                "description": {
-                    "type": "text",
-                    "nullable": true,
-                    "unique": false
-                },
-                "parent_id": {
-                    "type": "bigInteger",
-                    "nullable": true,
-                    "unique": false
-                }
-            },
-            "relations": {
-                "belongsTo": {
-                    "Brand" : {},
-                    "ProductCategory": {
-                        "related": "App\\Models\\Products\\ProductCategory",
-                        "foreingKey": "parent_id"
-                    }
-                },
-                "hasMany": {
-                    "Product":{
-                        "related": "App\\Models\\Products\\Product",
-                        "foreingKey": "product_category_id",
-                        "localKey": "id"
-                    }
-                }
-            },
-            "model": {
-                "namespace": "App\\Models\\Products",
-                "filePath": "app/Models/Products",
-                "classname": "ProductCategory",
-                "table": "product_cateogries",
-                "extends": "App\\Models\\Model",
-                "rewrite": true
-            },
-            "controller": {
-                "namespace": "App\\Http\\Controllers\\Product",
-                "filePath": "app/Http/Controllers/Product",
-                "extends": "App\\Http\\Controllers\\Controller"
-            },
-            "service": {
-                "use": [ "Laravel\\Sanctum\\HasApiTokens", "Illuminate\\Notifications\\Notifiable" ],
-                "namespace": "App\\Services\\Product",
-                "filePath": "app/Services/Product",
-                "extends": "App\\Services\\Service"
-            },
-            "resource": {
-                "namespace": "App\\Http\\Resources\\Product",
-                "filePath": "app/Http/Resources/Product"
-            },
-            "request": {
-                "namespace": "App\\Http\\Requests\\Product",
-                "filePath": "app/Http/Requests/Product"
-            }
-        },
         "Product": {
             "nameSingular": "product",
             "namePlural": "products",
             "rewrite": true,
             "files": [ "routes", "model", "controller", "migration", "resource", "request", "factory", "service", "test", "mock" ],
             "attributes": {
-                "title": {
+                "name": {
                     "type": "string",
                     "nullable": false,
+                    "unique": true
+                },
+                "code": {
+                    "type": "string",
+                    "nullable": true,
                     "unique": true
                 },
                 "description": {
@@ -84,117 +27,58 @@
                     "unique": false
                 },
                 "product_category_id": {
-                    "type": "bigInteger",
+                    "type": "unsignedBigInteger",
                     "nullable": false,
                     "unique": false
                 },
                 "product_brand_id": {
-                    "type": "bigInteger",
-                    "nullable": false,
+                    "type": "unsignedBigInteger",
+                    "nullable": true,
                     "unique": false
                 }
             },
             "relations": {
                 "belongsTo": {
                     "ProductBrand" : {
-                        "related": "App\\Models\\Products\\ProductBrand",
+                        "related": "App\\Models\\Product\\ProductBrand",
                         "foreingKey": "product_brand_id"
                     },
                     "ProductCategory": {
-                        "related": "App\\Models\\Products\\ProductCategory",
+                        "related": "App\\Models\\Product\\ProductCategory",
                         "foreingKey": "product_category_id"
-                    }
-                },
-                "hasOne": {
-                    "Post":{
-                        "related": "App\\Models\\Posts\\Post",
-                        "foreingKey": "product_id",
-                        "localKey": "id"
-                    }
-                },
-                "belongsToMany": {
-                    "ProductTag":{
-                        "related": "App\\Models\\Products\\ProductTag",
-                        "table": "tags_products",
-                        "foreignPivotKey": "productid",
-                        "relatedPivotKey": "tagid",
-                        "parentKey": "idproducto",
-                        "relatedKey": "idtag",
-                        "relation": "product_tag_relation_name"
-                    }
-                },
-                "hasMany": {
-                    "SaleItem":{
-                        "related": "App\\Models\\Sales\\SaleItem",
-                        "foreingKey": "product_id",
-                        "localKey": "id"
-                    }
-                },
-                "hasManyThrough": {
-                    "Sale": {
-                        "related": "App\\Models\\Sales\\Sale",
-                        "through": "App\\Models\\Sales\\SaleItem",
-                        "firstKey": "product_id",
-                        "secondKey": "idsale",
-                        "localKey": "item_id",
-                        "secondLocalKey": "sale_id"
-                    }
-                },
-                "morphTo" : {
-                    "imageable": {
-                        "type": "imageable_type",
-                        "id": "imageable_id",
-                        "owner": "id"
-                    },
-                    "testeable": {
-
-                    }
-                },
-                "morphMany": {
-                    "Image": {
-                        "relationName": "images",
-                        "related": "App\\Models\\Images\\Image",
-                        "name": "imageable"
-                    }
-                },
-                "morphOne": {
-                    "Image": {
-                        "relationName": "image",
-                        "related": "App\\Models\\Images\\Image",
-                        "name": "imageable"
                     }
                 }
             },
             "model": {
-                "namespace": "App\\Models",
-                "filePath": "app/Models",
+                "namespace": "App\\Models\\Product",
+                "filePath": "app/Models/Product",
                 "classname": "Product",
                 "table": "products",
-                "primaryKey": "idproduct",
-                "traits": [ "Laravel\\Sanctum\\HasApiTokens", "Illuminate\\Notifications\\Notifiable" ],
-                "interfaces": [ "Illuminate\\Contracts\\Auth\\MustVerifyEmail" ],
-                "extends": "Illuminate\\Foundation\\Auth\\User as Authenticatable",
+                "primaryKey": "id",
+                "traits": [ "App\\Traits\\Taggable", "App\\Traits\\Imageable" ],
+                "extends": "App\\Models\\Model",
                 "rewrite": true
             },
             "controller": {
                 "filePath": "app/Http/Controllers/Product",
-                "methods": [ "list", "store", "delete", "test1", "test2" ]
+                "methods": [ "list", "fetch", "store", "update", "delete", "restore", "test1", "test2" ]
             },
             "service": {
-                "use": [ "Laravel\\Sanctum\\HasApiTokens", "Illuminate\\Notifications\\Notifiable" ],
-                "extends": "MainService",
+                "extends": "App\\Services\\Service",
                 "filePath": "app/Services/Product",
-                "methods": [ "list", "store", "update", "delete" ]
+                "methods": [ "list", "fetch", "store", "update", "delete" ]
             },
             "migration": {
                 "table": "products",
-                "id": "idproduct",
+                "id": "id",
                 "filePath": "database/migrations"
             },
             "factory": {
+                "namespace": "Database\\Factories\\Product",
                 "filePath": "database/factories/product"
             },
             "mock": {
+                "namespace": "Database\\Seeders\\Mocks\\Product",
                 "filePath": "database/seeders/mocks/product",
                 "count": "100"
             },
@@ -205,26 +89,285 @@
 
             }
         },
-        "Invoice": {
+        "ProductCategory": {
             "attributes": {
-                "user_id": {
-                    "type": "bigInteger",
+                "name": {
+                    "type": "string",
                     "nullable": false,
                     "unique": true
                 },
-                "amount": {
-                    "type": "decimal",
+                "description": {
+                    "type": "text",
+                    "nullable": true,
+                    "unique": false
+                },
+                "parent_id": {
+                    "type": "unsignedBigInteger",
+                    "nullable": true,
+                    "unique": false
+                }
+            },
+            "relations": {
+                "belongsTo": {
+                    "ProductCategory": {
+                        "related": "App\\Models\\Product\\ProductCategory",
+                        "foreingKey": "parent_id"
+                    }
+                },
+                "hasMany": {
+                    "Product":{
+                        "related": "App\\Models\\Product\\Product",
+                        "foreingKey": "product_category_id",
+                        "localKey": "id"
+                    }
+                }
+            },
+            "model": {
+                "namespace": "App\\Models\\Product",
+                "filePath": "app/Models/Product",
+                "classname": "ProductCategory",
+                "table": "product_categories",
+                "extends": "App\\Models\\Model",
+                "rewrite": true
+            },
+            "controller": {
+                "namespace": "App\\Http\\Controllers\\Product",
+                "filePath": "app/Http/Controllers/Product",
+                "extends": "App\\Http\\Controllers\\Controller"
+            },
+            "service": {
+                "namespace": "App\\Services\\Product",
+                "filePath": "app/Services/Product",
+                "extends": "App\\Services\\Service"
+            },
+            "resource": {
+                "namespace": "App\\Http\\Resources\\Product",
+                "filePath": "app/Http/Resources/Product"
+            },
+            "request": {
+                "namespace": "App\\Http\\Requests\\Product",
+                "filePath": "app/Http/Requests/Product"
+            },
+            "factory": {
+                "namespace": "Database\\Factories\\Product",
+                "filePath": "database/factories/product"
+            },
+            "mock": {
+                "namespace": "Database\\Seeders\\Mocks\\Product",
+                "filePath": "database/seeders/mocks/product",
+                "count": "20"
+            }
+        },
+        "ProductBrand": {
+            "attributes": {
+                "name": {
+                    "type": "string",
+                    "nullable": false,
+                    "unique": true
+                },
+                "description": {
+                    "type": "text",
+                    "nullable": true,
+                    "unique": false
+                }
+            },
+            "relations": {
+                "hasMany": {
+                    "Product":{
+                        "related": "App\\Models\\Product\\Product",
+                        "foreingKey": "product_brand_id",
+                        "localKey": "id"
+                    }
+                }
+            },
+            "model": {
+                "namespace": "App\\Models\\Product",
+                "filePath": "app/Models/Product",
+                "extends": "App\\Models\\Model",
+                "rewrite": true
+            },
+            "controller": {
+                "namespace": "App\\Http\\Controllers\\Product",
+                "filePath": "app/Http/Controllers/Product",
+                "extends": "App\\Http\\Controllers\\Controller"
+            },
+            "service": {
+                "namespace": "App\\Services\\Product",
+                "filePath": "app/Services/Product",
+                "extends": "App\\Services\\Service"
+            },
+            "resource": {
+                "namespace": "App\\Http\\Resources\\Product",
+                "filePath": "app/Http/Resources/Product"
+            },
+            "request": {
+                "namespace": "App\\Http\\Requests\\Product",
+                "filePath": "app/Http/Requests/Product"
+            },
+            "factory": {
+                "namespace": "Database\\Factories\\Product",
+                "filePath": "database/factories/product"
+            },
+            "mock": {
+                "namespace": "Database\\Seeders\\Mocks\\Product",
+                "filePath": "database/seeders/mocks/product",
+                "count": "30"
+            }
+        },
+        "PostCategory": {
+            "attributes": {
+                "name": {
+                    "type": "string",
+                    "nullable": false,
+                    "unique": true
+                },
+                "description": {
+                    "type": "text",
+                    "nullable": true,
+                    "unique": false
+                },
+                "parent_id": {
+                    "type": "unsignedBigInteger",
+                    "nullable": true,
+                    "unique": false
+                }
+            },
+            "relations": {
+                "belongsTo": {
+                    "PostCategory": {
+                        "related": "App\\Models\\Post\\PostCategory",
+                        "foreingKey": "parent_id"
+                    }
+                },
+                "hasMany": {
+                    "Post":{
+                        "related": "App\\Models\\Post\\Post",
+                        "foreingKey": "post_category_id",
+                        "localKey": "id"
+                    }
+                }
+            },
+            "model": {
+                "namespace": "App\\Models\\Post",
+                "filePath": "app/Models/Post",
+                "classname": "PostCategory",
+                "table": "post_categories",
+                "extends": "App\\Models\\Model",
+                "rewrite": true
+            },
+            "controller": {
+                "namespace": "App\\Http\\Controllers\\Post",
+                "filePath": "app/Http/Controllers/Post",
+                "extends": "App\\Http\\Controllers\\Controller"
+            },
+            "service": {
+                "namespace": "App\\Services\\Post",
+                "filePath": "app/Services/Post",
+                "extends": "App\\Services\\Service"
+            },
+            "resource": {
+                "namespace": "App\\Http\\Resources\\Post",
+                "filePath": "app/Http/Resources/Post"
+            },
+            "request": {
+                "namespace": "App\\Http\\Requests\\Post",
+                "filePath": "app/Http/Requests/Post"
+            },
+            "factory": {
+                "namespace": "Database\\Factories\\Post",
+                "filePath": "database/factories/post"
+            },
+            "mock": {
+                "namespace": "Database\\Seeders\\Mocks\\Post",
+                "filePath": "database/seeders/mocks/post",
+                "count": "20"
+            }
+        },
+        "Post": {
+            "attributes": {
+                "title": {
+                    "type": "string",
+                    "nullable": false,
+                    "unique": true
+                },
+                "slug": {
+                    "type": "string",
+                    "nullable": false,
+                    "unique": true
+                },
+                "summary": {
+                    "type": "text",
+                    "nullable": true,
+                    "unique": false
+                },
+                "body": {
+                    "type": "text",
+                    "nullable": true,
+                    "unique": false
+                },
+                "publication_date": {
+                    "type": "dateTime",
                     "nullable": false,
                     "unique": false
                 },
-                "issue_date": {
-                    "type": "dateTime",
+                "view_count": {
+                    "type": "integer",
+                    "nullable": false,
+                    "unique": false,
+                    "default": 0
+                },
+                "post_category_id": {
+                    "type": "unsignedBigInteger",
+                    "nullable": true,
+                    "unique": false
+                },
+                "author_id": {
+                    "type": "unsignedBigInteger",
                     "nullable": false,
                     "unique": false
                 }
             },
+            "relations": {
+                "belongsTo": {
+                    "PostCategory": {
+                        "related": "App\\Models\\Post\\PostCategory",
+                        "foreingKey": "post_category_id"
+                    }
+                }
+            },
+            "model": {
+                "namespace": "App\\Models\\Post",
+                "filePath": "app/Models/Post",
+                "extends": "App\\Models\\Model",
+                "traits": [ "App\\Traits\\Taggable", "App\\Traits\\Imageable" ],
+                "rewrite": true
+            },
+            "controller": {
+                "namespace": "App\\Http\\Controllers\\Post",
+                "filePath": "app/Http/Controllers/Post",
+                "extends": "App\\Http\\Controllers\\Controller"
+            },
             "service": {
-                "static_methods": true
+                "namespace": "App\\Services\\Post",
+                "filePath": "app/Services/Post",
+                "extends": "App\\Services\\Service"
+            },
+            "resource": {
+                "namespace": "App\\Http\\Resources\\Post",
+                "filePath": "app/Http/Resources/Post"
+            },
+            "request": {
+                "namespace": "App\\Http\\Requests\\Post",
+                "filePath": "app/Http/Requests/Post"
+            },
+            "factory": {
+                "namespace": "Database\\Factories\\Post",
+                "filePath": "database/factories/post"
+            },
+            "mock": {
+                "namespace": "Database\\Seeders\\Mocks\\Post",
+                "filePath": "database/seeders/mocks/post",
+                "count": "200"
             }
         }
     }

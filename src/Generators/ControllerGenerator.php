@@ -139,7 +139,7 @@ class ControllerGenerator extends FileGenerator
         $objectData->files = [ 'request' ];
         $objectData->attributes = $this->entityData && property_exists( $this->entityData, 'attributes' )? $this->entityData->attributes : [];
         $requestDataExists = $this->entityData && property_exists( $this->entityData, 'request' );
-        $objectData->request = $requestDataExists? $this->entityData->request : [];
+        $objectData->request = $requestDataExists? (array) $this->entityData->request : [];
         $objectData->request[ 'filePath' ] = $requestDataExists && property_exists( $this->entityData->request, 'filePath' )?
             $this->entityData->request->filePath:
             $this->configurationOptions[ 'request' ][ 'file_path' ];

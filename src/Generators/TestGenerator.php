@@ -147,7 +147,7 @@ class TestGenerator extends FileGenerator
 
     public function generateListMethodContent() : string
     {
-        $methodContent = "{$this->entityVar} = {$this->entityModel}::factory(30)->create();\n\t\t";
+        $methodContent = "{$this->entityVar} = {$this->entityModel}::factory(30)->create()->first();\n\t\t";
         $routeUrl = $this->getMethodRouteUrl( $this->entityVar );
         $routeMethod = $this->getMethodRouteMethod( 'list' );
 

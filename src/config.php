@@ -72,7 +72,7 @@ return [
         "file_path" => "database/migrations",
         "namespace" => null,
         "timestamps" => true,
-        "softDeletes" => true,
+        "soft_deletes" => true,
         "id" => true,
         "rewrite" => false
     ],
