@@ -79,7 +79,10 @@ abstract class FileGenerator implements FileGeneratorInterface
 
     public function setFilePath() : void
     {
-        $this->filePath = $this->fileData && property_exists( $this->fileData, 'filePath' )? $this->fileData->filePath : $this->configurationOptions[ $this->fileType ][ 'file_path' ];
+        $fallbackPath = $this->fileData && property_exists( $this->fileData, 'namespace' )?
+                            $this->fileData->namespace:
+                            $this->configurationOptions[ $this->fileType ][ 'file_path' ];
+        $this->filePath = $this->fileData && property_exists( $this->fileData, 'filePath' )? $this->fileData->filePath: $fallbackPath;
     }
 
     protected function makePathDirectory() : void
