@@ -3,6 +3,7 @@
 namespace InnovaStudio\LaravelCrudGenerator;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 
 class LaravelCrudGenerator
 {
@@ -64,8 +65,17 @@ class LaravelCrudGenerator
         $defaultClassname = $globalEntity == 'model'? '' : ucfirst( $globalEntity );
         $entityData->$classnameAttribute = $entityIsSet && property_exists( $entityData->$globalEntity, 'classname' )? $entityData->$globalEntity->classname : $entityName . $defaultClassname;
         $entityData->$filePathAttribute = $entityIsSet && property_exists( $entityData->$globalEntity, 'filePath' )? $entityData->$globalEntity->filePath : $this->configurationOptions[ $globalEntity ][ 'file_path' ];
-        $entityData->$namespaceAttribute = $entityIsSet && property_exists( $entityData->$globalEntity, 'namespace' )? $entityData->$globalEntity->namespace : $this->configurationOptions[ $globalEntity ][ 'namespace' ];
+        $entityData->$namespaceAttribute = $entityIsSet && property_exists( $entityData->$globalEntity, 'namespace' )? $entityData->$globalEntity->namespace : ( property_exists( $entityData->$globalEntity, 'filePath' )? $this->filepathToNamespace( $entityData->$globalEntity->filePath ) : $this->configurationOptions[ $globalEntity ][ 'namespace' ] );
         $entityData->$urlAttribute = $entityData->$namespaceAttribute . '\\' . $entityData->$classnameAttribute;
         return $entityData;
+    }
+
+    public function filepathToNamespace( string $filepath )
+    {
+        $relativePath = str_replace( base_path() . '/', '', $filepath );
+        $namespace = implode( '\\', array_map( function( $value ) { return Str::studly( $value ); }, explode( '/', $relativePath ) ) );
+        if ( strpos( $namespace, 'app\\' ) === 0 )
+            $namespace = 'App' . substr( $namespace, 3 );
+        return $namespace;
     }
 }
