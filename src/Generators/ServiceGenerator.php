@@ -86,6 +86,7 @@ class ServiceGenerator extends FileGenerator
     {
         $self = $this->staticMethods? 'self::' : '$this->';
         return "{$this->entityVar} = {$self}fetch( {$this->entityVar}Id );
+        if( !{$this->entityVar} ) return;
         {$this->entityVar}->update( {$this->entityVar}Data );
         return {$this->entityVar};";
     }
@@ -99,6 +100,7 @@ class ServiceGenerator extends FileGenerator
     {
         $self = $this->staticMethods? 'self::' : '$this->';
         return "{$this->entityVar} = {$self}fetch( {$this->entityVar}Id );
+        if( !{$this->entityVar} ) return;
         {$this->entityVar}->delete();
         return {$this->entityVar};";
     }
@@ -110,7 +112,9 @@ class ServiceGenerator extends FileGenerator
 
     public function generateFetchMethodContent() : string
     {
-        return "return {$this->entityModel}::find( {$this->entityVar}Id );";
+        return "{$this->entityVar} = {$this->entityModel}::find( {$this->entityVar}Id );
+        if( !{$this->entityVar} ) return;
+        return {$this->entityVar};";
     }
 
     public function generateFetchMethodArguments() : string
@@ -131,5 +135,25 @@ class ServiceGenerator extends FileGenerator
     public function generateListMethodResponse() : string
     {
         return "\\Illuminate\\Pagination\\LengthAwarePaginator";
+    }
+
+    public function generateFetchMethodResponse() : string
+    {
+        return "? {$this->entityModel}";
+    }
+
+    public function generateUpdateMethodResponse() : string
+    {
+        return "? {$this->entityModel}";
+    }
+
+    public function generateDeleteMethodResponse() : string
+    {
+        return "? {$this->entityModel}";
+    }
+
+    public function generateRestoreMethodResponse() : string
+    {
+        return "? {$this->entityModel}";
     }
 }

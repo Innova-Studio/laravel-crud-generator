@@ -186,9 +186,15 @@ class ControllerGenerator extends FileGenerator
     public function generateUpdateMethodContent() : string
     {
         return "{$this->entityVar} = {$this->serviceCall}update( \$request->validated(), {$this->entityVar}Id );
-        return response()->json( [
-            'data' => {$this->entityResource}::make( {$this->entityVar} ),
-        ] );";
+        return {$this->entityVar} ?
+
+            response()->json( [
+                'data' => {$this->entityResource}::make( {$this->entityVar} ),
+            ] ):
+
+            response()->json( [
+                'error' => '{$this->entityName} with id ' . {$this->entityVar}Id . ' not found',
+            ], 404 );";
     }
 
     public function generateUpdateMethodArguments() : string
@@ -203,13 +209,13 @@ class ControllerGenerator extends FileGenerator
         return "{$this->entityVar} = {$this->serviceCall}delete( {$this->entityVar}Id );
         return {$this->entityVar} ?
 
-        response()->json( [
-            'data' => {$this->entityResource}::make( {$this->entityVar} ),
-        ], 204 ):
+            response()->json( [
+                'data' => {$this->entityResource}::make( {$this->entityVar} ),
+            ], 204 ):
 
-        response()->json( [
-            'error' => '{$this->entityName} not found',
-        ], 404 );";
+            response()->json( [
+                'error' => '{$this->entityName} with id ' . {$this->entityVar}Id . ' not found',
+            ], 404 );";
     }
 
     public function generateDeleteMethodArguments() : string
@@ -227,7 +233,7 @@ class ControllerGenerator extends FileGenerator
         ] ):
 
         response()->json( [
-            'error' => '{$this->entityName} not found',
+            'error' => '{$this->entityName} with id ' . {$this->entityVar}Id . ' not found',
         ], 404 );";
     }
 

@@ -38,7 +38,8 @@ class RoutesGenerator extends FileGenerator
 
     public function generateRouteData( string $methodName ) : string
     {
-        return "[ {$this->entityData->controllerClassname}::class, '{$methodName}' ] )->name( '{$this->entitySingularName}.{$methodName}' )->middleware( [ 'permission:{$this->entitySingularName}.{$methodName}' ]";
+        $routeName = Str::slug( Str::snake( $this->entityName )) . ".{$methodName}";
+        return "[ {$this->entityData->controllerClassname}::class, '{$methodName}' ] )->name( '{$routeName}' )->middleware( [ 'permission:{$routeName}' ]";
     }
 
     public function generateDefaultRoute( string $methodName ) : string
@@ -68,7 +69,7 @@ class RoutesGenerator extends FileGenerator
     public function generateUpdateRoute() : string
     {
         $routeData = $this->generateRouteData( 'update' );
-        return "Route::patch( '/{id}', $routeData );";
+        return "Route::put( '/{id}', $routeData );";
     }
 
     public function generateDeleteRoute() : string
@@ -88,7 +89,7 @@ class RoutesGenerator extends FileGenerator
         $this->fileContent = File::get( __DIR__ . '/../Stubs/routes.stub' );
         $this->fileContent = str_replace( '{{ controller_url }}', $this->entityData->controllerUrl, $this->fileContent );
         $this->fileContent = str_replace( '{{ controller }}', $this->entityData->controllerClassname, $this->fileContent );
-        $this->fileContent = str_replace( '{{ entity_plural }}', $this->entityPluralName, $this->fileContent );
+        $this->fileContent = str_replace( '{{ entity_plural }}', Str::slug( Str::snake( Str::plural( $this->entityName ) ) ), $this->fileContent );
         $this->fileContent = str_replace( '{{ routes }}', implode( "\n\t", $this->routes ), $this->fileContent );
     }
 }
