@@ -95,11 +95,13 @@ class ModelGenerator extends FileGenerator
         $foreingKey = $relationData->foreingKey ?? Str::snake( $modelRelation ) . '_id';
         $localKey = $relationData->localKey ?? $this->fileData->primaryKey ?? 'id';
         $relation = property_exists( $relationData, 'relation' )? ", '" . $relationData->relation . "'" : '';
+        $relationName = $relationData->relationName ?? Str::camel( $modelRelation );
+        $relatedClass = $this->getRelatedClass( $modelRelation, $relationData );
         return [
-            'relation_name' => $relationData->relationName ?? Str::camel( $modelRelation ),
+            'relation_name' => $relationName,
             'relation' => 'BelongsTo',
             'relation_method' => 'belongsTo',
-            'relation_content' => "$modelRelation::class, '$foreingKey', '$localKey'" . $relation,
+            'relation_content' => "$relatedClass::class, '$foreingKey', '$localKey'" . $relation,
         ];
     }
 
@@ -107,11 +109,12 @@ class ModelGenerator extends FileGenerator
     {
         $foreingKey = $relationData->foreingKey ?? Str::snake( $modelRelation );
         $localKey = $relationData->localKey ?? $this->fileData->primaryKey ?? 'id';
+        $relatedClass = $this->getRelatedClass( $modelRelation, $relationData );
         return [
             'relation_name' => $relationData->relationName ?? Str::camel( $modelRelation ),
             'relation' => 'HasOne',
             'relation_method' => 'hasOne',
-            'relation_content' => "$modelRelation::class, '$foreingKey', '$localKey'",
+            'relation_content' => "$relatedClass::class, '$foreingKey', '$localKey'",
         ];
     }
 
@@ -123,11 +126,12 @@ class ModelGenerator extends FileGenerator
         $parentKey = $relationData->parentKey ?? $this->fileData->primaryKey ?? 'id';
         $relatedKey = $relationData->relatedKey ?? 'id';
         $relation = property_exists( $relationData, 'relation' )? ", '" . $relationData->relation . "'" : '';
+        $relatedClass = $this->getRelatedClass( $modelRelation, $relationData );
         return [
             'relation_name' => $relationData->relationName ?? Str::plural( Str::camel( $modelRelation ) ),
             'relation' => 'BelongsToMany',
             'relation_method' => 'belongsToMany',
-            'relation_content' => "$modelRelation::class, '$table', '$foreignPivotKey', '$relatedPivotKey', '$parentKey', '$relatedKey'" . $relation,
+            'relation_content' => "$relatedClass::class, '$table', '$foreignPivotKey', '$relatedPivotKey', '$parentKey', '$relatedKey'" . $relation,
         ];
     }
 
@@ -135,11 +139,12 @@ class ModelGenerator extends FileGenerator
     {
         $foreingKey = $relationData->foreingKey ?? Str::snake( $modelRelation );
         $localKey = $relationData->localKey ?? $this->fileData->primaryKey ?? 'id';
+        $relatedClass = $this->getRelatedClass( $modelRelation, $relationData );
         return [
             'relation_name' => $relationData->relationName ?? Str::plural( Str::camel( $modelRelation ) ),
             'relation' => 'HasMany',
             'relation_method' => 'hasMany',
-            'relation_content' => "$modelRelation::class, '$foreingKey', '$localKey'",
+            'relation_content' => "$relatedClass::class, '$foreingKey', '$localKey'",
         ];
     }
     public function getHasManyThroughRelationData( string $modelRelation, object $relationData ) : array
@@ -155,11 +160,12 @@ class ModelGenerator extends FileGenerator
         $secondKey = $relationData->secondKey ?? Str::snake( $modelRelation ) . '_id';
         $localKey = $relationData->localKey ?? 'id';
         $secondLocalKey = $relationData->secondLocalKey ?? 'id';
+        $relatedClass = $this->getRelatedClass( $modelRelation, $relationData );
         return [
             'relation_name' => $relationData->relationName ?? Str::plural( Str::camel( $modelRelation ) ),
             'relation' => 'HasManyThrough',
             'relation_method' => 'hasManyThrough',
-            'relation_content' => "$modelRelation::class, $through::class, '$firstKey', '$secondKey', '$localKey', '$secondLocalKey'",
+            'relation_content' => "$relatedClass::class, $through::class, '$firstKey', '$secondKey', '$localKey', '$secondLocalKey'",
         ];
     }
 

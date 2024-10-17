@@ -159,6 +159,28 @@ abstract class FileGenerator implements FileGeneratorInterface
         $this->classname = $classname ?? '';
     }
 
+    public function findRelationClass( string $relationName ) : ? string
+    {
+        if( str_contains( $relationName, '_' ) ) $relationName = Str::before( $relationName, '_id' );
+        $relationName = Str::studly( $relationName );
+        if( $this->entityData && property_exists( $this->entityData, 'relations' ) )
+        {
+            foreach( $this->entityData->relations as $relationType )
+            {
+                foreach( $relationType as $relationEntity => $relationData )
+                {
+                    if( $relationEntity == $relationName ) return $relationData->related;
+                }
+            }
+        }
+        return $relationName;
+    }
+
+    public function getRelatedClass( string $modelRelation, object $relationData ) : string
+    {
+        return explode( '\\', $relationData->related ?? $modelRelation )[ count( explode( '\\', $relationData->related ?? $modelRelation ) ) - 1 ];
+    }
+
     public function generateFile() : void
     {
         $this->generateFileContent();

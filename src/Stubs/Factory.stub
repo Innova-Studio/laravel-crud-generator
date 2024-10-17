@@ -17,9 +17,9 @@
     {
         return $this->afterMaking( function( {{ model }} ${{ var_name }} )
         {
-            // TO DO
+            {{ after_making }}
         })->afterCreating( function( {{ model }} ${{ var_name }} )
         {
-            // TO DO
+            {{ after_creating }}
         });
     }

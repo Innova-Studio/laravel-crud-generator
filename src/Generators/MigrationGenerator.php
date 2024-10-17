@@ -151,7 +151,7 @@ class MigrationGenerator extends FileGenerator
         foreach( $relations as $modelRelation => $relationData )
         {
             $column = $relationData->foreingKey ?? Str::snake( $modelRelation ) . '_id';
-            $table = Str::snake( Str::plural( $modelRelation ) );
+            $table = Str::snake( Str::plural( $this->getRelatedClass( $modelRelation, $relationData ) ) );
             $reference = $relationData->localKey ?? $this->fileData->primaryKey ?? 'id';
             $extra = "->references( '$reference' )->on( '$table' )";
             $templateData = [

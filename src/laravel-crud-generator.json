@@ -4,6 +4,7 @@
             "nameSingular": "product",
             "namePlural": "products",
             "rewrite": true,
+            "softDeletes": true,
             "files": [ "routes", "model", "controller", "migration", "resource", "request", "factory", "service", "test", "mock" ],
             "attributes": {
                 "name": {
@@ -55,7 +56,6 @@
                 "classname": "Product",
                 "table": "products",
                 "primaryKey": "id",
-                "traits": [ "App\\Traits\\Taggable", "App\\Traits\\Imageable" ],
                 "extends": "App\\Models\\Model",
                 "rewrite": true
             },
@@ -81,6 +81,14 @@
                 "namespace": "Database\\Seeders\\Mocks\\Product",
                 "filePath": "database/seeders/mocks/product",
                 "count": "100"
+            },
+            "resource": {
+                "namespace": "App\\Http\\Resources\\Product",
+                "filePath": "app/Http/Resources/Product"
+            },
+            "request": {
+                "namespace": "App\\Http\\Requests\\Product",
+                "filePath": "app/Http/Requests/Product"
             },
             "tests": {
 
@@ -332,6 +340,10 @@
                     "PostCategory": {
                         "related": "App\\Models\\Post\\PostCategory",
                         "foreingKey": "post_category_id"
+                    },
+                    "Author": {
+                        "related": "App\\Models\\User",
+                        "foreingKey": "author_id"
                     }
                 }
             },
@@ -339,7 +351,6 @@
                 "namespace": "App\\Models\\Post",
                 "filePath": "app/Models/Post",
                 "extends": "App\\Models\\Model",
-                "traits": [ "App\\Traits\\Taggable", "App\\Traits\\Imageable" ],
                 "rewrite": true
             },
             "controller": {

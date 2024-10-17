@@ -3,6 +3,7 @@
 return [
     "default_file_path" => env( "LARAVEL_CRUD_GENERATOR_FILE_PATH" ) ?? 'laravel-crud-generator.json',
     "rewrite" => env( "LARAVEL_CRUD_GENERATOR_RERWRITE" ) ?? false,
+    "soft_deletes" => env( "LARAVEL_CRUD_GENERATOR_SOFTDELETES" ) ?? true,
     "files" => [ "routes", "model", "controller", "migration", "resource", "factory", "service", "test", "mock" ],
     "relations" => [],
     "routes" => [
@@ -30,7 +31,7 @@ return [
         "extends" => 'App\\Http\\Controllers\\Controller',
         "file_path" => "app/Http/Controllers",
         "namespace" => "App\\Http\\Controllers",
-        "methods" => [ "list", "show", "store", "update", "delete" ],
+        "methods" => [ "list", "fetch", "store", "update", "delete", "restore" ],
         "response" => "\\Illuminate\\Http\\JsonResponse",
         "rewrite" => false
     ],
@@ -41,7 +42,7 @@ return [
         "extends" => 'Illuminate\\Foundation\\Http\\FormRequest',
         "file_path" => "app/Http/Requests",
         "namespace" => "App\\Http\\Requests",
-        "methods" => [ "list", "show", "store", "update", "delete" ],
+        "methods" => [ "list", "fetch", "store", "update", "delete", "restore" ],
         "rewrite" => false
     ],
     "resource" => [
@@ -61,7 +62,7 @@ return [
         "file_path" => "app/Services",
         "namespace" => "App\\Services",
         "static_methods" => false,
-        "methods" => [ "list", "fetch", "store", "update", "delete" ],
+        "methods" => [ "list", "fetch", "store", "update", "delete", "restore" ],
         "rewrite" => false
     ],
     "migration" => [
@@ -72,7 +73,6 @@ return [
         "file_path" => "database/migrations",
         "namespace" => null,
         "timestamps" => true,
-        "soft_deletes" => true,
         "id" => true,
         "rewrite" => false
     ],
