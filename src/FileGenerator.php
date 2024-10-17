@@ -80,7 +80,7 @@ abstract class FileGenerator implements FileGeneratorInterface
     public function setFilePath() : void
     {
         $fallbackPath = $this->fileData && property_exists( $this->fileData, 'namespace' )?
-                            $this->fileData->namespace:
+                            $this->namespaceToFilepath( $this->fileData->namespace ):
                             $this->configurationOptions[ $this->fileType ][ 'file_path' ];
         $this->filePath = $this->fileData && property_exists( $this->fileData, 'filePath' )? $this->fileData->filePath: $fallbackPath;
     }
@@ -217,9 +217,29 @@ abstract class FileGenerator implements FileGeneratorInterface
     {
         if( $this->fileType !== 'routes' )
         {
-            $classNamespace = $this->fileData && property_exists( $this->fileData, 'namespace' )? $this->fileData->namespace : $this->configurationOptions[ $this->fileType ][ 'namespace' ];
+            $fallbackNamespace = $this->fileType !== 'migration'?
+                ($this->fileData && property_exists( $this->fileData, 'filePath' )? $this->filepathToNamespace( $this->fileData->filePath ) : $this->configurationOptions[ $this->fileType ][ 'namespace' ]):
+                $this->configurationOptions[ $this->fileType ][ 'namespace' ];
+            $classNamespace = $this->fileData && property_exists( $this->fileData, 'namespace' )? $this->fileData->namespace : $fallbackNamespace;
             $this->classNamespace = $classNamespace ?? '';
         }
+    }
+
+    public function filepathToNamespace( string $filepath )
+    {
+        $relativePath = str_replace( base_path() . '/', '', $filepath );
+        $namespace = implode( '\\', array_map( function( $value ) { return Str::studly( $value ); }, explode( '/', $relativePath ) ) );
+        if ( strpos( $namespace, 'app\\' ) === 0 )
+            $namespace = 'App' . substr( $namespace, 3 );
+        return $namespace;
+    }
+
+    public function namespaceToFilepath( string $namespace )
+    {
+        $filepath = implode( '/', array_map( function( $value ) { return Str::studly( $value ); }, explode( '\\', $namespace ) ) );
+        if ( strpos( $filepath, 'App/' ) === 0 )
+            $filepath = 'app' . substr( $filepath, 3 );
+        return $filepath;
     }
 
     public function fileShouldBeCreated() : bool
