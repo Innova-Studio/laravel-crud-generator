@@ -231,6 +231,7 @@ abstract class FileGenerator implements FileGeneratorInterface
         $namespace = implode( '\\', array_map( function( $value ) { return Str::studly( $value ); }, explode( '/', $relativePath ) ) );
         if ( strpos( $namespace, 'app\\' ) === 0 )
             $namespace = 'App' . substr( $namespace, 3 );
+        dd( $namespace );
         return $namespace;
     }
 
