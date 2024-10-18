@@ -142,10 +142,15 @@ class ControllerGenerator extends FileGenerator
         $objectData->request = $requestDataExists? (array) $this->entityData->request : [];
         $objectData->request[ 'filePath' ] = $requestDataExists && property_exists( $this->entityData->request, 'filePath' )?
             $this->entityData->request->filePath:
-            $this->configurationOptions[ 'request' ][ 'file_path' ];
+            (property_exists( $this->entityData->request, 'namespace' )?
+                $this->namespaceToFilepath( $this->entityData->request->namespace ):
+                $this->configurationOptions[ 'request' ][ 'file_path' ]);
+
         $objectData->request[ 'namespace' ] = $requestDataExists && property_exists( $this->entityData->request, 'namespace' )?
             $this->entityData->request->namespace:
-            $this->configurationOptions[ 'request' ][ 'namespace' ];
+            ( property_exists( $this->entityData->request, 'filePath' )?
+                $this->filepathToNamespace( $this->entityData->request->filePath ):
+                $this->configurationOptions[ 'request' ][ 'namespace' ]);
         $objectData->request[ 'filePath' ] .= '/' . Str::studly( $this->entityName );
         $objectData->request[ 'namespace' ] .= '\\' . Str::studly( $this->entityName );
         $generator = new RequestGenerator( $requestFile, json_decode( json_encode( $objectData ) ) );

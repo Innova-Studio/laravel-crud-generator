@@ -64,7 +64,7 @@ class LaravelCrudGenerator
         $urlAttribute = $globalEntity."Url";
         $defaultClassname = $globalEntity == 'model'? '' : ucfirst( $globalEntity );
         $entityData->$classnameAttribute = $entityIsSet && property_exists( $entityData->$globalEntity, 'classname' )? $entityData->$globalEntity->classname : $entityName . $defaultClassname;
-        $entityData->$filePathAttribute = $entityIsSet && property_exists( $entityData->$globalEntity, 'filePath' )? $entityData->$globalEntity->filePath : $this->configurationOptions[ $globalEntity ][ 'file_path' ];
+        $entityData->$filePathAttribute = $entityIsSet && property_exists( $entityData->$globalEntity, 'filePath' )? $entityData->$globalEntity->filePath : ( $entityIsSet && property_exists( $entityData->$globalEntity, 'namespace' )? $this->namespaceToFilepath( $entityData->$globalEntity->namespace ) : $this->configurationOptions[ $globalEntity ][ 'file_path' ] );
         $entityData->$namespaceAttribute = $entityIsSet && property_exists( $entityData->$globalEntity, 'namespace' )? $entityData->$globalEntity->namespace : ( property_exists( $entityData->$globalEntity, 'filePath' )? $this->filepathToNamespace( $entityData->$globalEntity->filePath ) : $this->configurationOptions[ $globalEntity ][ 'namespace' ] );
         $entityData->$urlAttribute = $entityData->$namespaceAttribute . '\\' . $entityData->$classnameAttribute;
         return $entityData;
@@ -77,5 +77,13 @@ class LaravelCrudGenerator
         if ( strpos( $namespace, 'app\\' ) === 0 )
             $namespace = 'App' . substr( $namespace, 3 );
         return $namespace;
+    }
+
+    public function namespaceToFilepath( string $namespace )
+    {
+        $filepath = implode( '/', array_map( function( $value ) { return Str::studly( $value ); }, explode( '\\', $namespace ) ) );
+        if ( strpos( $filepath, 'App/' ) === 0 )
+            $filepath = 'app' . substr( $filepath, 3 );
+        return $filepath;
     }
 }
