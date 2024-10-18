@@ -86,7 +86,7 @@ class ServiceGenerator extends FileGenerator
     {
         $self = $this->staticMethods? 'self::' : '$this->';
         return "{$this->entityVar} = {$self}fetch( {$this->entityVar}Id );
-        if( !{$this->entityVar} ) return;
+        if( !{$this->entityVar} ) return null;
         {$this->entityVar}->update( {$this->entityVar}Data );
         return {$this->entityVar};";
     }
@@ -100,7 +100,7 @@ class ServiceGenerator extends FileGenerator
     {
         $self = $this->staticMethods? 'self::' : '$this->';
         return "{$this->entityVar} = {$self}fetch( {$this->entityVar}Id );
-        if( !{$this->entityVar} ) return;
+        if( !{$this->entityVar} ) return null;
         {$this->entityVar}->delete();
         return {$this->entityVar};";
     }
@@ -113,7 +113,7 @@ class ServiceGenerator extends FileGenerator
     public function generateFetchMethodContent() : string
     {
         return "{$this->entityVar} = {$this->entityModel}::find( {$this->entityVar}Id );
-        if( !{$this->entityVar} ) return;
+        if( !{$this->entityVar} ) return null;
         return {$this->entityVar};";
     }
 
