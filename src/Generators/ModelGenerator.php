@@ -77,9 +77,10 @@ class ModelGenerator extends FileGenerator
         $modelRelations = '';
         foreach( $relations as $modelRelation => $relationData )
         {
+            $relationDataRelated = property_exists( $relationData, 'related' )? $relationData->related : null;
             if( $relationType != 'MorphTo' )
             {
-                $classUrl = property_exists( $relationData, 'related' )? $relationData->related : $this->defaultNamespace . '\\' . $modelRelation;
+                $classUrl = $relationDataRelated ?? $this->defaultNamespace . '\\' . $modelRelation;
                 $this->addFileUseUrl( $classUrl );
                 $class = $this->replaceRepeatedClass( $classUrl );
                 if( strpos( $class, ' as ' ) &&  !in_array( $classUrl, $this->fileUseUrls ) ) $relationData->related = $class;
@@ -235,7 +236,7 @@ class ModelGenerator extends FileGenerator
         {
             if( strpos( $fileUrl, ' as ' ) > 0 && strpos( $fileUrl, $class ) === 0 )
             {
-                return $fileUrl;
+                return $class == ( $this->classNamespace . "\\" . $this->classname ) ? $class : $fileUrl;
             }
         }
         return $class;

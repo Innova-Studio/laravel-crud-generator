@@ -220,9 +220,9 @@ abstract class FileGenerator implements FileGeneratorInterface
         return $relationName;
     }
 
-    public function getRelatedClass( string $modelRelation, object $relationData ) : string
+    public function getRelatedClass( string $modelRelation, object $relationData, bool $withAs = true ) : string
     {
-        return $this->getClassNameFromUrl( $relationData->related ?? $modelRelation );
+        return $this->getClassNameFromUrl( $relationData->related ?? $modelRelation, $withAs );
     }
 
     public function generateFile() : void
@@ -333,12 +333,12 @@ abstract class FileGenerator implements FileGeneratorInterface
         return true;
     }
 
-    public static function getClassNameFromUrl( $classUrl ) : string
+    public static function getClassNameFromUrl( $classUrl, bool $withAs = true ) : string
     {
         $className = explode( '\\', $classUrl );
         $className = $className[ count( $className ) - 1 ];
         $className = explode( ' as ', $className );
-        return isset( $className[ 1 ] )? $className[ 1 ] : $className[ 0 ];
+        return $withAs && isset( $className[ 1 ] )? $className[ 1 ] : $className[ 0 ];
     }
 
     public static function isCannonicalMethod( string $method ) : bool

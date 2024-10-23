@@ -197,7 +197,7 @@ class TestGenerator extends FileGenerator
     {
         $id =  $entityVar? '/{' . $entityVar . '->id}': '';
         $prefix = $method? '/' . $method : '';
-        return '/' . Str::snake( $this->entityPluralName ) . $prefix . $id;
+        return '/' . Str::slug( Str::snake( $this->entityPluralName ) ) . $prefix . $id;
     }
 
     public function getMethodRouteMethod( $method )
@@ -214,6 +214,6 @@ class TestGenerator extends FileGenerator
 
     public function getTableName()
     {
-        return $this->entityData && property_exists( $this->entityData, 'migration' ) && property_exists( $this->entityData->migration, 'table' )? $this->entityData->migration->table : Str::snake( Str::plural( $this->entityName ) );
+        return $this->entityData && property_exists( $this->entityData, 'model' ) && property_exists( $this->entityData->model, 'table' )? $this->entityData->model->table : Str::snake( Str::plural( $this->entityName ) );
     }
 }
