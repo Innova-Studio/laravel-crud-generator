@@ -197,7 +197,7 @@ class TestGenerator extends FileGenerator
     {
         $id =  $entityVar? '/{' . $entityVar . '->id}': '';
         $prefix = $method? '/' . $method : '';
-        return '/' . $this->entityPluralName . $prefix . $id;
+        return '/' . Str::snake( $this->entityPluralName ) . $prefix . $id;
     }
 
     public function getMethodRouteMethod( $method )

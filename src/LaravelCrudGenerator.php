@@ -63,9 +63,18 @@ class LaravelCrudGenerator
         $namespaceAttribute = $globalEntity."Namespace";
         $urlAttribute = $globalEntity."Url";
         $defaultClassname = $globalEntity == 'model'? '' : ucfirst( $globalEntity );
+
+
+        $module = $entityData && property_exists( $entityData, 'module' )? Str::studly( $entityData->module ) : null;
         $entityData->$classnameAttribute = $entityIsSet && property_exists( $entityData->$globalEntity, 'classname' )? $entityData->$globalEntity->classname : $entityName . $defaultClassname;
-        $entityData->$filePathAttribute = $entityIsSet && property_exists( $entityData->$globalEntity, 'filePath' )? $entityData->$globalEntity->filePath : ( $entityIsSet && property_exists( $entityData->$globalEntity, 'namespace' )? $this->namespaceToFilepath( $entityData->$globalEntity->namespace ) : $this->configurationOptions[ $globalEntity ][ 'file_path' ] );
-        $entityData->$namespaceAttribute = $entityIsSet && property_exists( $entityData->$globalEntity, 'namespace' )? $entityData->$globalEntity->namespace : ( property_exists( $entityData->$globalEntity, 'filePath' )? $this->filepathToNamespace( $entityData->$globalEntity->filePath ) : $this->configurationOptions[ $globalEntity ][ 'namespace' ] );
+        $entityData->$filePathAttribute = $entityIsSet && property_exists( $entityData->$globalEntity, 'filePath' )? $entityData->$globalEntity->filePath : ( $entityIsSet && property_exists( $entityData->$globalEntity, 'namespace' )? $this->namespaceToFilepath( $entityData->$globalEntity->namespace ) : $this->configurationOptions[ $globalEntity ][ 'file_path' ] .( $module ? '/' . $module : '' ) );
+        $entityData->$namespaceAttribute = $entityIsSet && property_exists( $entityData->$globalEntity, 'namespace' )?
+            $entityData->$globalEntity->namespace:
+            (
+                $entityIsSet && property_exists( $entityData->$globalEntity, 'filePath' )?
+                    $this->filepathToNamespace( $entityData->$globalEntity->filePath ):
+                    $this->configurationOptions[ $globalEntity ][ 'namespace' ] . ( $module ? '\\' . $module : '' )
+            );
         $entityData->$urlAttribute = $entityData->$namespaceAttribute . '\\' . $entityData->$classnameAttribute;
         return $entityData;
     }

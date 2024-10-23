@@ -79,24 +79,28 @@ class ModelGenerator extends FileGenerator
         {
             if( $relationType != 'MorphTo' )
             {
-                $classUrl = property_exists( $relationData, 'related' )? $relationData->related : $this->configurationOptions[ 'model' ][ 'namespace' ] . '\\' . $modelRelation;
+                $classUrl = property_exists( $relationData, 'related' )? $relationData->related : $this->defaultNamespace . '\\' . $modelRelation;
                 $this->addFileUseUrl( $classUrl );
+                $class = $this->replaceRepeatedClass( $classUrl );
+                if( strpos( $class, ' as ' ) &&  !in_array( $classUrl, $this->fileUseUrls ) ) $relationData->related = $class;
+                // if( $classUrl == 'App\Models\Post\PostCategory' ) dd( $classUrl, $class, $this->fileUseUrls );
             }
 
             $method = 'get' .  $relationType . 'RelationData';
-            $templateData = $this->$method( $modelRelation, $relationData );
+            $templateData = $this->$method( $modelRelation, $relationData, $class );
             $modelRelations .= parent::generateFromTemplate( 'relation', $templateData );
         }
         return $modelRelations;
     }
 
-    public function getBelongsToRelationData( string $modelRelation, object $relationData ) : array
+    public function getBelongsToRelationData( string $modelRelation, object $relationData, string | null $class = null ) : array
     {
         $foreingKey = $relationData->foreingKey ?? Str::snake( $modelRelation ) . '_id';
         $localKey = $relationData->localKey ?? $this->fileData->primaryKey ?? 'id';
         $relation = property_exists( $relationData, 'relation' )? ", '" . $relationData->relation . "'" : '';
         $relationName = $relationData->relationName ?? Str::camel( $modelRelation );
-        $relatedClass = $this->getRelatedClass( $modelRelation, $relationData );
+        // if( $class == 'App\Models\Post\PostCategory as PostPostCategory' ) dd( $class, $relationData );
+        $relatedClass = $this->getRelatedClass( $class, $relationData );
         return [
             'relation_name' => $relationName,
             'relation' => 'BelongsTo',
@@ -105,11 +109,11 @@ class ModelGenerator extends FileGenerator
         ];
     }
 
-    public function getHasOneRelationData( string $modelRelation, object $relationData ) : array
+    public function getHasOneRelationData( string $modelRelation, object $relationData, string | null $class = null ) : array
     {
         $foreingKey = $relationData->foreingKey ?? Str::snake( $modelRelation );
         $localKey = $relationData->localKey ?? $this->fileData->primaryKey ?? 'id';
-        $relatedClass = $this->getRelatedClass( $modelRelation, $relationData );
+        $relatedClass = $this->getRelatedClass( $class, $relationData );
         return [
             'relation_name' => $relationData->relationName ?? Str::camel( $modelRelation ),
             'relation' => 'HasOne',
@@ -118,7 +122,7 @@ class ModelGenerator extends FileGenerator
         ];
     }
 
-    public function getBelongsToManyRelationData( string $modelRelation, object $relationData ) : array
+    public function getBelongsToManyRelationData( string $modelRelation, object $relationData, string | null $class = null ) : array
     {
         $table = $relationData->table ?? Str::snake( Str::singular( $this->entityName ) ) . '_' . Str::snake( $modelRelation );
         $foreignPivotKey = $relationData->foreignPivotKey ?? Str::snake( Str::singular( $this->entityName ) ) . '_id';
@@ -126,7 +130,7 @@ class ModelGenerator extends FileGenerator
         $parentKey = $relationData->parentKey ?? $this->fileData->primaryKey ?? 'id';
         $relatedKey = $relationData->relatedKey ?? 'id';
         $relation = property_exists( $relationData, 'relation' )? ", '" . $relationData->relation . "'" : '';
-        $relatedClass = $this->getRelatedClass( $modelRelation, $relationData );
+        $relatedClass = $this->getRelatedClass( $class, $relationData );
         return [
             'relation_name' => $relationData->relationName ?? Str::plural( Str::camel( $modelRelation ) ),
             'relation' => 'BelongsToMany',
@@ -135,11 +139,11 @@ class ModelGenerator extends FileGenerator
         ];
     }
 
-    public function getHasManyRelationData( string $modelRelation, object $relationData ) : array
+    public function getHasManyRelationData( string $modelRelation, object $relationData, string | null $class = null ) : array
     {
         $foreingKey = $relationData->foreingKey ?? Str::snake( $modelRelation );
         $localKey = $relationData->localKey ?? $this->fileData->primaryKey ?? 'id';
-        $relatedClass = $this->getRelatedClass( $modelRelation, $relationData );
+        $relatedClass = $this->getRelatedClass( $class, $relationData );
         return [
             'relation_name' => $relationData->relationName ?? Str::plural( Str::camel( $modelRelation ) ),
             'relation' => 'HasMany',
@@ -147,7 +151,7 @@ class ModelGenerator extends FileGenerator
             'relation_content' => "$relatedClass::class, '$foreingKey', '$localKey'",
         ];
     }
-    public function getHasManyThroughRelationData( string $modelRelation, object $relationData ) : array
+    public function getHasManyThroughRelationData( string $modelRelation, object $relationData, string | null $class = null ) : array
     {
         $through = $relationData->through ?? $this->entityName . $modelRelation;
         if( strpos( $through, '\\' ) !== false )
@@ -160,7 +164,7 @@ class ModelGenerator extends FileGenerator
         $secondKey = $relationData->secondKey ?? Str::snake( $modelRelation ) . '_id';
         $localKey = $relationData->localKey ?? 'id';
         $secondLocalKey = $relationData->secondLocalKey ?? 'id';
-        $relatedClass = $this->getRelatedClass( $modelRelation, $relationData );
+        $relatedClass = $this->getRelatedClass( $class, $relationData );
         return [
             'relation_name' => $relationData->relationName ?? Str::plural( Str::camel( $modelRelation ) ),
             'relation' => 'HasManyThrough',
@@ -169,7 +173,7 @@ class ModelGenerator extends FileGenerator
         ];
     }
 
-    public function getMorphToRelationData( string $modelRelation, object $relationData )
+    public function getMorphToRelationData( string $modelRelation, object $relationData, string | null $class = null )
     {
         $relationContent = "";
         if( property_exists( $relationData, 'type' ) || property_exists( $relationData, 'id' ) || property_exists( $relationData, 'owner' ) )
@@ -189,10 +193,10 @@ class ModelGenerator extends FileGenerator
         ];
     }
 
-    public function getMorphManyRelationData( string $modelRelation, object $relationData ) : array
+    public function getMorphManyRelationData( string $modelRelation, object $relationData, string | null $class = null ) : array
     {
         $name = $relationData->name ?? Str::camel( $modelRelation );
-        $relationContent = "$modelRelation::class, '$name'";
+        $relationContent = "$class::class, '$name'";
         if( property_exists( $relationData, 'type' ) || property_exists( $relationData, 'id' ) || property_exists( $relationData, 'localKey' ) )
         {
             $type = $relationData->type ?? $modelRelation . '_type';
@@ -208,10 +212,10 @@ class ModelGenerator extends FileGenerator
         ];
     }
 
-    public function getMorphOneRelationData( string $modelRelation, object $relationData ) : array
+    public function getMorphOneRelationData( string $modelRelation, object $relationData, string | null $class = null ) : array
     {
         $name = $relationData->name ?? Str::sanke( $modelRelation );
-        $relationContent = "$modelRelation::class, '$name'";
+        $relationContent = "$class::class, '$name'";
         if( property_exists( $relationData, 'type' ) || property_exists( $relationData, 'id' ) || property_exists( $relationData, 'localKey' ) )
         {
             $type = $relationData->type ?? $modelRelation . '_type';
@@ -225,6 +229,18 @@ class ModelGenerator extends FileGenerator
             'relation_method' => 'morphOne',
             'relation_content' => $relationContent,
         ];
+    }
+
+    public function replaceRepeatedClass( string $class ) : string
+    {
+        foreach( $this->fileUseUrls as $fileUrl )
+        {
+            if( strpos( $fileUrl, ' as ' ) > 0 && strpos( $fileUrl, $class ) === 0 )
+            {
+                return $fileUrl;
+            }
+        }
+        return $class;
     }
 
     public function generateFileContent() : void

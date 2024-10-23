@@ -5,6 +5,7 @@
             "namePlural": "products",
             "rewrite": true,
             "softDeletes": true,
+            "module": "product",
             "files": [ "routes", "model", "controller", "migration", "resource", "request", "factory", "service", "test", "mock" ],
             "attributes": {
                 "name": {
@@ -60,44 +61,22 @@
                 "rewrite": true
             },
             "controller": {
-                "filePath": "app/Http/Controllers/Product",
                 "methods": [ "list", "fetch", "store", "update", "delete", "restore", "test1", "test2" ]
             },
             "service": {
-                "extends": "App\\Services\\Service",
-                "filePath": "app/Services/Product",
-                "methods": [ "list", "fetch", "store", "update", "delete" ]
+                "extends": "App\\Services\\Service"
             },
             "migration": {
                 "table": "products",
                 "id": "id",
                 "filePath": "database/migrations"
             },
-            "factory": {
-                "namespace": "Database\\Factories\\Product",
-                "filePath": "database/factories/product"
-            },
             "mock": {
-                "namespace": "Database\\Seeders\\Mocks\\Product",
-                "filePath": "database/seeders/mocks/product",
                 "count": "100"
-            },
-            "resource": {
-                "namespace": "App\\Http\\Resources\\Product",
-                "filePath": "app/Http/Resources/Product"
-            },
-            "request": {
-                "namespace": "App\\Http\\Requests\\Product",
-                "filePath": "app/Http/Requests/Product"
-            },
-            "tests": {
-
-            },
-            "routes": {
-
             }
         },
         "ProductCategory": {
+            "module": "product",
             "attributes": {
                 "name": {
                     "type": "string",
@@ -131,42 +110,17 @@
                 }
             },
             "model": {
-                "namespace": "App\\Models\\Product",
-                "filePath": "app/Models/Product",
-                "classname": "ProductCategory",
-                "table": "product_categories",
-                "extends": "App\\Models\\Model",
-                "rewrite": true
-            },
-            "controller": {
-                "namespace": "App\\Http\\Controllers\\Product",
-                "filePath": "app/Http/Controllers/Product",
-                "extends": "App\\Http\\Controllers\\Controller"
+                "extends": "App\\Models\\Model"
             },
             "service": {
-                "namespace": "App\\Services\\Product",
-                "filePath": "app/Services/Product",
                 "extends": "App\\Services\\Service"
             },
-            "resource": {
-                "namespace": "App\\Http\\Resources\\Product",
-                "filePath": "app/Http/Resources/Product"
-            },
-            "request": {
-                "namespace": "App\\Http\\Requests\\Product",
-                "filePath": "app/Http/Requests/Product"
-            },
-            "factory": {
-                "namespace": "Database\\Factories\\Product",
-                "filePath": "database/factories/product"
-            },
             "mock": {
-                "namespace": "Database\\Seeders\\Mocks\\Product",
-                "filePath": "database/seeders/mocks/product",
                 "count": "20"
             }
         },
         "ProductBrand": {
+            "module": "product",
             "attributes": {
                 "name": {
                     "type": "string",
@@ -189,40 +143,18 @@
                 }
             },
             "model": {
-                "namespace": "App\\Models\\Product",
-                "filePath": "app/Models/Product",
                 "extends": "App\\Models\\Model",
                 "rewrite": true
             },
-            "controller": {
-                "namespace": "App\\Http\\Controllers\\Product",
-                "filePath": "app/Http/Controllers/Product",
-                "extends": "App\\Http\\Controllers\\Controller"
-            },
             "service": {
-                "namespace": "App\\Services\\Product",
-                "filePath": "app/Services/Product",
                 "extends": "App\\Services\\Service"
             },
-            "resource": {
-                "namespace": "App\\Http\\Resources\\Product",
-                "filePath": "app/Http/Resources/Product"
-            },
-            "request": {
-                "namespace": "App\\Http\\Requests\\Product",
-                "filePath": "app/Http/Requests/Product"
-            },
-            "factory": {
-                "namespace": "Database\\Factories\\Product",
-                "filePath": "database/factories/product"
-            },
             "mock": {
-                "namespace": "Database\\Seeders\\Mocks\\Product",
-                "filePath": "database/seeders/mocks/product",
                 "count": "30"
             }
         },
         "PostCategory": {
+            "module": "post",
             "attributes": {
                 "name": {
                     "type": "string",
@@ -256,42 +188,18 @@
                 }
             },
             "model": {
-                "namespace": "App\\Models\\Post",
-                "filePath": "app/Models/Post",
-                "classname": "PostCategory",
-                "table": "post_categories",
                 "extends": "App\\Models\\Model",
                 "rewrite": true
             },
-            "controller": {
-                "namespace": "App\\Http\\Controllers\\Post",
-                "filePath": "app/Http/Controllers/Post",
-                "extends": "App\\Http\\Controllers\\Controller"
-            },
             "service": {
-                "namespace": "App\\Services\\Post",
-                "filePath": "app/Services/Post",
                 "extends": "App\\Services\\Service"
             },
-            "resource": {
-                "namespace": "App\\Http\\Resources\\Post",
-                "filePath": "app/Http/Resources/Post"
-            },
-            "request": {
-                "namespace": "App\\Http\\Requests\\Post",
-                "filePath": "app/Http/Requests/Post"
-            },
-            "factory": {
-                "namespace": "Database\\Factories\\Post",
-                "filePath": "database/factories/post"
-            },
             "mock": {
-                "namespace": "Database\\Seeders\\Mocks\\Post",
-                "filePath": "database/seeders/mocks/post",
                 "count": "20"
             }
         },
         "Post": {
+            "module": "post",
             "attributes": {
                 "title": {
                     "type": "string",
@@ -348,36 +256,13 @@
                 }
             },
             "model": {
-                "namespace": "App\\Models\\Post",
-                "filePath": "app/Models/Post",
                 "extends": "App\\Models\\Model",
                 "rewrite": true
             },
-            "controller": {
-                "namespace": "App\\Http\\Controllers\\Post",
-                "filePath": "app/Http/Controllers/Post",
-                "extends": "App\\Http\\Controllers\\Controller"
-            },
             "service": {
-                "namespace": "App\\Services\\Post",
-                "filePath": "app/Services/Post",
                 "extends": "App\\Services\\Service"
             },
-            "resource": {
-                "namespace": "App\\Http\\Resources\\Post",
-                "filePath": "app/Http/Resources/Post"
-            },
-            "request": {
-                "namespace": "App\\Http\\Requests\\Post",
-                "filePath": "app/Http/Requests/Post"
-            },
-            "factory": {
-                "namespace": "Database\\Factories\\Post",
-                "filePath": "database/factories/post"
-            },
             "mock": {
-                "namespace": "Database\\Seeders\\Mocks\\Post",
-                "filePath": "database/seeders/mocks/post",
                 "count": "200"
             }
         }

@@ -4,6 +4,7 @@ return [
     "default_file_path" => env( "LARAVEL_CRUD_GENERATOR_FILE_PATH" ) ?? 'laravel-crud-generator.json',
     "rewrite" => env( "LARAVEL_CRUD_GENERATOR_RERWRITE" ) ?? false,
     "soft_deletes" => env( "LARAVEL_CRUD_GENERATOR_SOFTDELETES" ) ?? true,
+    "module" => env( "LARAVEL_CRUD_GENERATOR_MODULE" ) ?? null,
     "files" => [ "routes", "model", "controller", "migration", "resource", "factory", "service", "test", "mock" ],
     "relations" => [],
     "routes" => [

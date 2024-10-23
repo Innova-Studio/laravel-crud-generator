@@ -45,7 +45,7 @@ class RequestGenerator extends FileGenerator
             $type = $this->formatRuleType( $attributeData->type );
             $nullable = property_exists( $attributeData, 'nullable' )? " 'nullable'," : 'required';
             $type = property_exists( $attributeData, 'type' )? " '$type'," : '';
-            $unique = property_exists( $attributeData, 'unique' ) && $attributeData->unique? " 'unique'," : '';
+            $unique = property_exists( $attributeData, 'unique' ) && $attributeData->unique? " 'unique:{$this->entityData->request->table}'," : '';
             $max = property_exists( $attributeData, 'max' )? " 'max:$attributeData->max'," : '';
             $min = property_exists( $attributeData, 'min' )? " 'min:$attributeData->min'," : '';
             $this->rules[] = "\n\t\t\t'$attributeName' => [" . $nullable . $type . $unique . $max . $min . "],";
@@ -59,7 +59,7 @@ class RequestGenerator extends FileGenerator
             $type = $this->formatRuleType( $attributeData->type );
             $nullable = property_exists( $attributeData, 'nullable' )? " 'nullable'," : 'required';
             $type = property_exists( $attributeData, 'type' )? " '$type'," : '';
-            $unique = property_exists( $attributeData, 'unique' ) && $attributeData->unique? " 'unique'," : '';
+            $unique = property_exists( $attributeData, 'unique' ) && $attributeData->unique? " 'unique:{$this->entityData->request->table},{$attributeName},' . \$this->route('id')," : '';
             $max = property_exists( $attributeData, 'max' )? " 'max:$attributeData->max'," : '';
             $min = property_exists( $attributeData, 'min' )? " 'min:$attributeData->min'," : '';
             $this->rules[] = "\n\t\t\t'$attributeName' => [" . $nullable . $type . $unique . $max . $min . "],";

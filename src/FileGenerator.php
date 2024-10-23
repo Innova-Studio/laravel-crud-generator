@@ -11,6 +11,7 @@ abstract class FileGenerator implements FileGeneratorInterface
     protected string $entityName;
     protected string $entitySingularName;
     protected string $entityPluralName;
+    protected string | null $entityModule = null;
     protected $entityData;
     protected string $filePath;
     protected string $fileName;
@@ -25,6 +26,9 @@ abstract class FileGenerator implements FileGeneratorInterface
     protected $fileData;
     protected string $classname;
     protected string $classNamespace;
+    protected bool $softDeletes;
+    protected string | null $defaultNamespace;
+    protected string $defaultFilePath;
 
     protected array $stubKeys = [ 'namespace', 'use', 'classname', 'extends', 'traits', 'implements' ];
 
@@ -43,6 +47,10 @@ abstract class FileGenerator implements FileGeneratorInterface
         $this->setGeneratorData();
         $this->setEntitySingularName();
         $this->setEntityPluralName();
+        $this->setEntityModule();
+        $this->setSoftDeletes();
+        $this->setDefaultNamespace();
+        $this->setDefaultFilePath();
         $this->setFilePath();
         $this->makePathDirectory();
         $this->setClassname();
@@ -63,12 +71,37 @@ abstract class FileGenerator implements FileGeneratorInterface
 
     public function setEntitySingularName() : void
     {
-        $this->entitySingularName = strtolower( $this->entityData && property_exists( $this->entityData, 'nameSingular' )? $this->entityData->nameSingular : $this->entityName );
+        $this->entitySingularName = Str::studly( $this->entityData && property_exists( $this->entityData, 'nameSingular' )? $this->entityData->nameSingular : $this->entityName );
     }
 
     public function setEntityPluralName() : void
     {
-        $this->entityPluralName = strtolower( $this->entityData && property_exists( $this->entityData, 'namePlural' )? $this->entityData->namePlural : Str::plural( $this->entitySingularName ) );
+        $this->entityPluralName = Str::studly( $this->entityData && property_exists( $this->entityData, 'namePlural' )? $this->entityData->namePlural : Str::plural( $this->entitySingularName ) );
+    }
+
+    public function setSoftDeletes() : void
+    {
+        $this->softDeletes = $this->entityData && property_exists( $this->entityData, 'softDeletes' )? $this->entityData->softDeletes: $this->configurationOptions[ 'soft_deletes' ];
+    }
+
+    public function setEntityModule() : void
+    {
+        $this->entityModule = $this->entityData && property_exists( $this->entityData, 'module' )? $this->entityData->module: $this->configurationOptions[ 'module' ];
+        $this->entityModule = Str::studly( $this->entityModule );
+    }
+
+    public function setDefaultNamespace() : void
+    {
+        $this->defaultNamespace = $this->configurationOptions[ $this->fileType ][ 'namespace' ];
+        if( $this->entityModule )
+            $this->defaultNamespace .= '\\' . $this->entityModule;
+    }
+
+    public function setDefaultFilePath() : void
+    {
+        $this->defaultFilePath = $this->configurationOptions[ $this->fileType ][ 'file_path' ];
+        if( $this->entityModule && $this->fileType !== 'migration' )
+            $this->defaultFilePath .= '/' . $this->entityModule;
     }
 
     public function setGeneratorData() : void
@@ -81,7 +114,7 @@ abstract class FileGenerator implements FileGeneratorInterface
     {
         $fallbackPath = $this->fileData && property_exists( $this->fileData, 'namespace' )?
                             $this->namespaceToFilepath( $this->fileData->namespace ):
-                            $this->configurationOptions[ $this->fileType ][ 'file_path' ];
+                            $this->defaultFilePath;
         $this->filePath = $this->fileData && property_exists( $this->fileData, 'filePath' )? $this->fileData->filePath: $fallbackPath;
     }
 
@@ -112,10 +145,19 @@ abstract class FileGenerator implements FileGeneratorInterface
 
     public function addFileUseUrl( string $url ) : void
     {
-        if( !in_array( $url, $this->fileUseUrls ) )
+        $urlArray = explode( '\\', $url );
+        $className = end( $urlArray );
+        $as = $url . ' as ' . $urlArray[ count( $urlArray ) - 2 ] . $className;
+        foreach( $this->fileUseUrls as $fileUrl )
         {
-            $this->fileUseUrls[] = $url;
+            if( $url == $fileUrl )
+                return;
+            $fileUrlArray = explode( '\\', $fileUrl );
+            // if( $url == "App\\Models\\Post\\PostCategory" ) dd( $url, $fileUrl, $this->classNamespace . '\\' . $this->classname, $className, $this->classname );
+            if( $className == end( $fileUrlArray ) || $className == $this->classname )
+                $url = $as;
         }
+        $this->fileUseUrls[] = $url;
     }
 
     public function setFileExtends() : void
@@ -181,7 +223,8 @@ abstract class FileGenerator implements FileGeneratorInterface
 
     public function getRelatedClass( string $modelRelation, object $relationData ) : string
     {
-        return explode( '\\', $relationData->related ?? $modelRelation )[ count( explode( '\\', $relationData->related ?? $modelRelation ) ) - 1 ];
+        // if( $modelRelation == 'App\Models\Post\PostCategory as PostPostCategory' ) dd( $relationData->related, $modelRelation );
+        return $this->getClassNameFromUrl( $relationData->related ?? $modelRelation );
     }
 
     public function generateFile() : void
@@ -218,8 +261,8 @@ abstract class FileGenerator implements FileGeneratorInterface
         if( $this->fileType !== 'routes' )
         {
             $fallbackNamespace = $this->fileType !== 'migration'?
-                ($this->fileData && property_exists( $this->fileData, 'filePath' )? $this->filepathToNamespace( $this->fileData->filePath ) : $this->configurationOptions[ $this->fileType ][ 'namespace' ]):
-                $this->configurationOptions[ $this->fileType ][ 'namespace' ];
+                ( $this->fileData && property_exists( $this->fileData, 'filePath' )? $this->filepathToNamespace( $this->fileData->filePath ) : $this->defaultNamespace ):
+                $this->defaultNamespace;
             $classNamespace = $this->fileData && property_exists( $this->fileData, 'namespace' )? $this->fileData->namespace : $fallbackNamespace;
             $this->classNamespace = $classNamespace ?? '';
         }
@@ -294,6 +337,7 @@ abstract class FileGenerator implements FileGeneratorInterface
 
     public static function getClassNameFromUrl( $classUrl ) : string
     {
+        // if( $classUrl == 'App\Models\Post\PostCategory' ) dd( $classUrl );
         $className = explode( '\\', $classUrl );
         $className = $className[ count( $className ) - 1 ];
         $className = explode( ' as ', $className );

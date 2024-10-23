@@ -117,7 +117,7 @@ class ControllerGenerator extends FileGenerator
 
     public function getResourceNamespace() : string
     {
-        return $this->entityData && property_exists( $this->entityData, 'resource' ) && property_exists( $this->entityData->resource, 'namespace' )? $this->entityData->resource->namespace : $this->configurationOptions[ 'resource' ][ 'namespace' ];
+        return $this->entityData && property_exists( $this->entityData, 'resource' ) && property_exists( $this->entityData->resource, 'namespace' )? $this->entityData->resource->namespace : $this->configurationOptions[ 'resource' ][ 'namespace' ] . ( $this->entityModule ? '\\' . $this->entityModule : '' );
     }
 
     public function getResourceResponseNamespace() : string
@@ -142,17 +142,18 @@ class ControllerGenerator extends FileGenerator
         $objectData->request = $requestDataExists? (array) $this->entityData->request : [];
         $objectData->request[ 'filePath' ] = $requestDataExists && property_exists( $this->entityData->request, 'filePath' )?
             $this->entityData->request->filePath:
-            (property_exists( $this->entityData->request, 'namespace' )?
+            ( property_exists( $this->entityData, 'request' ) && property_exists( $this->entityData->request, 'namespace' )?
                 $this->namespaceToFilepath( $this->entityData->request->namespace ):
-                $this->configurationOptions[ 'request' ][ 'file_path' ]);
+                $this->configurationOptions[ 'request' ][ 'file_path' ] . ( $this->entityModule ? '/' . $this->entityModule : '' ) );
 
         $objectData->request[ 'namespace' ] = $requestDataExists && property_exists( $this->entityData->request, 'namespace' )?
             $this->entityData->request->namespace:
-            ( property_exists( $this->entityData->request, 'filePath' )?
+            ( property_exists( $this->entityData, 'request' ) && property_exists( $this->entityData->request, 'filePath' )?
                 $this->filepathToNamespace( $this->entityData->request->filePath ):
-                $this->configurationOptions[ 'request' ][ 'namespace' ]);
+                $this->configurationOptions[ 'request' ][ 'namespace' ] . ( $this->entityModule ? '\\' . $this->entityModule : '' ) );
         $objectData->request[ 'filePath' ] .= '/' . Str::studly( $this->entityName );
         $objectData->request[ 'namespace' ] .= '\\' . Str::studly( $this->entityName );
+        $objectData->request[ 'table' ] = $this->entityData && property_exists( $this->entityData, 'model' ) && property_exists( $this->entityData->model, 'table' )? $this->entityData->model->table : Str::snake( $this->entityPluralName );
         $generator = new RequestGenerator( $requestFile, json_decode( json_encode( $objectData ) ) );
         $generator->createFile();
         return $objectData->request[ 'namespace' ] . '\\' . $this->getMethodRequestFile( $requestFile );

@@ -85,9 +85,7 @@ class MigrationGenerator extends FileGenerator
 
     public function setSoftDeletesColumn() : string
     {
-        $softDeletes = $this->fileData && property_exists( $this->fileData, 'softDeletes' ) && $this->fileData->softDeletes !== false? $this->fileData->softDeletes : null;
-        $softDeletes = $softDeletes ?? $this->configurationOptions[ 'migration' ][ 'soft_deletes' ];
-        if( !$softDeletes || $softDeletes === false ) return '';
+        if( !$this->softDeletes ) return '';
         return "\t\t\t\$table->softDeletes();\n";
     }
 
