@@ -243,14 +243,23 @@ class ControllerGenerator extends FileGenerator
         ], 404 );";
     }
 
+    public function generateFetchMethodContent() : string
+    {
+        return $this->generateShowMethodContent();
+    }
+
     public function generateShowMethodArguments() : string
     {
         return "int {$this->entityVar}Id";
     }
 
+    public function generateFetchMethodArguments() : string
+    {
+        return $this->generateShowMethodArguments();
+    }
+
     public function generateListMethodContent() : string
     {
-
         $listVar = Str::plural( $this->entityVar );
         return "{$listVar} = {$this->serviceCall}list( \$request->validated() );
         return response()->json( [
