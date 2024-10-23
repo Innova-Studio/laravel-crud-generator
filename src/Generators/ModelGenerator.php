@@ -83,7 +83,6 @@ class ModelGenerator extends FileGenerator
                 $this->addFileUseUrl( $classUrl );
                 $class = $this->replaceRepeatedClass( $classUrl );
                 if( strpos( $class, ' as ' ) &&  !in_array( $classUrl, $this->fileUseUrls ) ) $relationData->related = $class;
-                // if( $classUrl == 'App\Models\Post\PostCategory' ) dd( $classUrl, $class, $this->fileUseUrls );
             }
 
             $method = 'get' .  $relationType . 'RelationData';
@@ -99,7 +98,6 @@ class ModelGenerator extends FileGenerator
         $localKey = $relationData->localKey ?? $this->fileData->primaryKey ?? 'id';
         $relation = property_exists( $relationData, 'relation' )? ", '" . $relationData->relation . "'" : '';
         $relationName = $relationData->relationName ?? Str::camel( $modelRelation );
-        // if( $class == 'App\Models\Post\PostCategory as PostPostCategory' ) dd( $class, $relationData );
         $relatedClass = $this->getRelatedClass( $class, $relationData );
         return [
             'relation_name' => $relationName,

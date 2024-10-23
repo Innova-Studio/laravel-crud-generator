@@ -153,7 +153,6 @@ abstract class FileGenerator implements FileGeneratorInterface
             if( $url == $fileUrl )
                 return;
             $fileUrlArray = explode( '\\', $fileUrl );
-            // if( $url == "App\\Models\\Post\\PostCategory" ) dd( $url, $fileUrl, $this->classNamespace . '\\' . $this->classname, $className, $this->classname );
             if( $className == end( $fileUrlArray ) || $className == $this->classname )
                 $url = $as;
         }
@@ -223,7 +222,6 @@ abstract class FileGenerator implements FileGeneratorInterface
 
     public function getRelatedClass( string $modelRelation, object $relationData ) : string
     {
-        // if( $modelRelation == 'App\Models\Post\PostCategory as PostPostCategory' ) dd( $relationData->related, $modelRelation );
         return $this->getClassNameFromUrl( $relationData->related ?? $modelRelation );
     }
 
@@ -258,14 +256,14 @@ abstract class FileGenerator implements FileGeneratorInterface
 
     public function setClassNamespace() : void
     {
-        if( $this->fileType !== 'routes' )
-        {
-            $fallbackNamespace = $this->fileType !== 'migration'?
-                ( $this->fileData && property_exists( $this->fileData, 'filePath' )? $this->filepathToNamespace( $this->fileData->filePath ) : $this->defaultNamespace ):
-                $this->defaultNamespace;
-            $classNamespace = $this->fileData && property_exists( $this->fileData, 'namespace' )? $this->fileData->namespace : $fallbackNamespace;
-            $this->classNamespace = $classNamespace ?? '';
-        }
+        if( $this->fileType === 'migration' ) $this->classNamespace = '';
+        if( in_array( $this->fileType, [ 'routes', 'migration' ] ) ) return;
+
+        $fallbackNamespace = $this->fileData && property_exists( $this->fileData, 'filePath' )?
+            $this->filepathToNamespace( $this->fileData->filePath ):
+            $this->defaultNamespace;
+        $classNamespace = $this->fileData && property_exists( $this->fileData, 'namespace' )? $this->fileData->namespace : $fallbackNamespace;
+        $this->classNamespace = $classNamespace ?? '';
     }
 
     public function filepathToNamespace( string $filepath )
@@ -337,7 +335,6 @@ abstract class FileGenerator implements FileGeneratorInterface
 
     public static function getClassNameFromUrl( $classUrl ) : string
     {
-        // if( $classUrl == 'App\Models\Post\PostCategory' ) dd( $classUrl );
         $className = explode( '\\', $classUrl );
         $className = $className[ count( $className ) - 1 ];
         $className = explode( ' as ', $className );
