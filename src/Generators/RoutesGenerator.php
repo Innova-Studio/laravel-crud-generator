@@ -66,6 +66,12 @@ class RoutesGenerator extends FileGenerator
         return "Route::get( '/{id}', $routeData );";
     }
 
+    public function generateFetchRoute() : string
+    {
+        $routeData = $this->generateRouteData( 'fetch' );
+        return "Route::get( '/{id}', $routeData );";
+    }
+
     public function generateUpdateRoute() : string
     {
         $routeData = $this->generateRouteData( 'update' );
@@ -81,7 +87,7 @@ class RoutesGenerator extends FileGenerator
     public function generateRestoreRoute() : string
     {
         $routeData = $this->generateRouteData( 'restore' );
-        return "Route::put( '/{id}', $routeData );";
+        return "Route::patch( '/{id}', $routeData );";
     }
 
     public function generateFileContent() : void

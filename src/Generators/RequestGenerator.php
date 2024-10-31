@@ -48,7 +48,7 @@ class RequestGenerator extends FileGenerator
             $unique = property_exists( $attributeData, 'unique' ) && $attributeData->unique? " 'unique:{$this->entityData->request->table}'," : '';
             $max = property_exists( $attributeData, 'max' )? " 'max:$attributeData->max'," : '';
             $min = property_exists( $attributeData, 'min' )? " 'min:$attributeData->min'," : '';
-            $this->rules[] = "\n\t\t\t'$attributeName' => [" . $nullable . $type . $unique . $max . $min . "],";
+            $this->rules[] = str_replace( ',]', ' ]', "\n\t\t\t'$attributeName' => [" . $nullable . $type . $unique . $max . $min . "]," );
         }
     }
 
@@ -62,7 +62,7 @@ class RequestGenerator extends FileGenerator
             $unique = property_exists( $attributeData, 'unique' ) && $attributeData->unique? " 'unique:{$this->entityData->request->table},{$attributeName},' . \$this->route('id')," : '';
             $max = property_exists( $attributeData, 'max' )? " 'max:$attributeData->max'," : '';
             $min = property_exists( $attributeData, 'min' )? " 'min:$attributeData->min'," : '';
-            $this->rules[] = "\n\t\t\t'$attributeName' => [" . $nullable . $type . $unique . $max . $min . "],";
+            $this->rules[] = str_replace( ',]', ' ]', "\n\t\t\t'$attributeName' => [" . $nullable . $type . $unique . $max . $min . "]," );
         }
     }
 
@@ -70,23 +70,26 @@ class RequestGenerator extends FileGenerator
     {
         foreach( $this->entityData->attributes as $attributeName => $attributeData )
         {
-            $type = $this->formatRuleType( $attributeData->type );
+            $type = $this->formatRuleType( $attributeData, );
             $nullable = property_exists( $attributeData, 'nullable' )? " 'nullable'," : 'required';
             $type = property_exists( $attributeData, 'type' )? " '$type'," : '';
-            $unique = property_exists( $attributeData, 'unique' ) && $attributeData->unique? " 'unique'," : '';
             $max = property_exists( $attributeData, 'max' )? " 'max:$attributeData->max'," : '';
             $min = property_exists( $attributeData, 'min' )? " 'min:$attributeData->min'," : '';
-            $this->rules[] = "\n\t\t\t'$attributeName' => [" . $nullable . $type . $unique . $max . $min . "],";
+            $this->rules[] = str_replace( ',]', ' ]', "\n\t\t\t'$attributeName' => [" . $nullable . $type . $max . $min . "]," );
         }
     }
 
-    public function formatRuleType( $type )
+    public function formatRuleType( $attributeData = null )
     {
-        switch( Str::lower( $type ) )
+        switch( Str::lower( $attributeData->type ) )
         {
             case 'text': return 'string';
+            case 'datetime': return 'date';
             case 'biginteger': return 'integer';
-            default: return $type;
+            case 'unsignedbiginteger': return 'integer';
+            case 'decimal':
+                return property_exists( $attributeData, 'parameter2' )? "decimal:" . $attributeData->parameter2 : "decimal:2";
+            default: return $attributeData->type;
         }
     }
 }

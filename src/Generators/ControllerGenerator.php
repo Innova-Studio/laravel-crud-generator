@@ -217,7 +217,7 @@ class ControllerGenerator extends FileGenerator
 
             response()->json( [
                 'data' => {$this->entityResource}::make( {$this->entityVar} ),
-            ], 204 ):
+            ], 200 ):
 
             response()->json( [
                 'error' => '{$this->entityName} with id ' . {$this->entityVar}Id . ' not found',
