@@ -42,7 +42,7 @@ class RequestGenerator extends FileGenerator
     {
         foreach( $this->entityData->attributes as $attributeName => $attributeData )
         {
-            $type = $this->formatRuleType( $attributeData->type );
+            $type = $this->formatRuleType( $attributeData );
             $nullable = property_exists( $attributeData, 'nullable' )? " 'nullable'," : 'required';
             $type = property_exists( $attributeData, 'type' )? " '$type'," : '';
             $unique = property_exists( $attributeData, 'unique' ) && $attributeData->unique? " 'unique:{$this->entityData->request->table}'," : '';
@@ -56,7 +56,7 @@ class RequestGenerator extends FileGenerator
     {
         foreach( $this->entityData->attributes as $attributeName => $attributeData )
         {
-            $type = $this->formatRuleType( $attributeData->type );
+            $type = $this->formatRuleType( $attributeData );
             $nullable = property_exists( $attributeData, 'nullable' )? " 'nullable'," : 'required';
             $type = property_exists( $attributeData, 'type' )? " '$type'," : '';
             $unique = property_exists( $attributeData, 'unique' ) && $attributeData->unique? " 'unique:{$this->entityData->request->table},{$attributeName},' . \$this->route('id')," : '';
@@ -70,7 +70,7 @@ class RequestGenerator extends FileGenerator
     {
         foreach( $this->entityData->attributes as $attributeName => $attributeData )
         {
-            $type = $this->formatRuleType( $attributeData, );
+            $type = $this->formatRuleType( $attributeData );
             $nullable = property_exists( $attributeData, 'nullable' )? " 'nullable'," : 'required';
             $type = property_exists( $attributeData, 'type' )? " '$type'," : '';
             $max = property_exists( $attributeData, 'max' )? " 'max:$attributeData->max'," : '';
@@ -81,6 +81,7 @@ class RequestGenerator extends FileGenerator
 
     public function formatRuleType( $attributeData = null )
     {
+        if( !is_object( $attributeData ) ) dd( $attributeData );
         switch( Str::lower( $attributeData->type ) )
         {
             case 'text': return 'string';
